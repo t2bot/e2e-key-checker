@@ -1,0 +1,13 @@
+# Homeserver and test user account on that homeserver to use
+# to download keys.
+homeserver:
+  url: "https://t2bot.io"
+  accessToken: ""
+
+rateLimit:
+  windowMs: 900000 # 15 minutes
+  maxReqs: 10 # per windowMs
+
+bind:
+  address: 0.0.0.0
+  port: 8080

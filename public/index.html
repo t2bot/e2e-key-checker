@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>e2e device checker</title>
+        <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Roboto:300,300italic,700,700italic">
+        <link rel="stylesheet" href="//cdn.rawgit.com/necolas/normalize.css/master/normalize.css">
+        <link rel="stylesheet" href="//cdn.rawgit.com/milligram/milligram/master/dist/milligram.min.css">
+
+        <style type="text/css">
+        body, html {
+            background-color: #fbf8ff;
+        }
+
+        #wrapper {
+            width: 400px;
+            margin: auto;
+            margin-top: 30px;
+            margin-bottom: 30px;
+            background-color: #fff;
+            padding: 20px;
+            border: 1px solid #aaa;
+        }
+
+        #checkBtn {
+            float: right;
+        }
+
+        #output {
+            margin-top: 20px;
+            clear: both;
+        }
+
+        .device {
+            margin-bottom: 20px;
+        }
+
+        .device .name {
+            font-size: 1.5em;
+            color: #111;
+            display: block;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        .device .id {
+            font-size: 0.8em;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+        </style>
+    </head>
+    <body>
+        <div id="wrapper">
+            <header>
+                <h1>Device Checker</h1>
+                <p>Enter your username below to see which e2e-capable devices you have.</p>
+            </header>
+            <div id="form">
+                <form onsubmit="checkDevices(event)" name="userIdForm">
+                    <input type="text" id="userId" placeholder="@alice:example.org" value="@travis:t2l.io" />
+                    <input type="submit" value="Check" id="checkBtn" />
+                </form>
+            </div>
+            <div id="output"><!-- populated --></div>
+        </div>
+
+        <script type="text/javascript">
+        // SOURCE: https://github.com/component/escape-html/blob/b42947eefa79efff01b3fe988c4c7e7b051ec8d8/index.js
+        var matchHtmlRegExp = /["'&<>]/;
+        function escapeHtml(string) {
+            var str = '' + string;
+            var match = matchHtmlRegExp.exec(str);
+
+            if (!match) {
+                return str;
+            }
+
+            var escape;
+            var html = '';
+            var index = 0;
+            var lastIndex = 0;
+
+            for (index = match.index; index < str.length; index++) {
+                switch (str.charCodeAt(index)) {
+                case 34: // "
+                    escape = '&quot;';
+                    break;
+                case 38: // &
+                    escape = '&amp;';
+                    break;
+                case 39: // '
+                    escape = '&#39;';
+                    break;
+                case 60: // <
+                    escape = '&lt;';
+                    break;
+                case 62: // >
+                    escape = '&gt;';
+                    break;
+                default:
+                    continue;
+                }
+
+                if (lastIndex !== index) {
+                    html += str.substring(lastIndex, index);
+                }
+
+                lastIndex = index + 1;
+                html += escape;
+            }
+
+            return lastIndex !== index
+                ? html + str.substring(lastIndex, index)
+                : html;
+        }
+        </script>
+        <script type="text/javascript">
+        function checkDevices(e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            const userIdTbx = document.getElementById("userId");
+            userIdTbx.disabled = true;
+
+            const button = document.getElementById("checkBtn");
+            button.disabled = true;
+
+            const output = document.getElementById("output");
+            output.innerHTML = "";
+
+            fetch("/api/v1/lookup/" + userIdTbx.value).then(res => {
+                if (res.status !== 200) {
+                    console.error(res);
+                    throw new Error("Invalid response");
+                }
+
+                res.json().then(devices => {
+                    let html = "";
+                    for (const device of devices) {
+                        const deviceName = escapeHtml(device['name']);
+                        const deviceId = escapeHtml(device['deviceId']);
+                        html += `<div class='device'><span class='name'>${deviceName}</span><span class='id'>${deviceId}</span></div>`;
+                    }
+                    if (devices.length === 0) {
+                        html = "<span class='no-devices'>You have no devices</span>";
+                    }
+                    output.innerHTML = html;
+                });
+                userIdTbx.disabled = false;
+                button.disabled = false;
+            }).catch(err => {
+                console.error(err);
+                alert("Error checking devices");
+                userIdTbx.disabled = false;
+                button.disabled = false;
+            });
+        }
+        </script>
+    </body>
+</html>

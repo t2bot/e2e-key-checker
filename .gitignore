@@ -1,3 +1,7 @@
+# app files
+config/*.yaml
+!config/default.yaml
+
 # Logs
 logs
 *.log

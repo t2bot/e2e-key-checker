@@ -1,0 +1,26 @@
+{
+  "name": "e2e-key-checker",
+  "version": "0.0.1",
+  "description": "Checks what keys a homeserver knows about",
+  "main": "app.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/t2bot/e2e-key-checker.git"
+  },
+  "author": "Travis Ralston <travis@t2bot.io>",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/t2bot/e2e-key-checker/issues"
+  },
+  "homepage": "https://github.com/t2bot/e2e-key-checker#readme",
+  "dependencies": {
+    "config": "^3.1.0",
+    "express": "^4.17.1",
+    "express-rate-limit": "^5.0.0",
+    "matrix-bot-sdk": "^0.3.8",
+    "node-cache": "^4.2.0"
+  },
+  "scripts": {
+    "start": "node app.js"
+  }
+}
