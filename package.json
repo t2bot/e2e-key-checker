@@ -15,7 +15,7 @@
   "homepage": "https://github.com/t2bot/e2e-key-checker#readme",
   "dependencies": {
     "config": "^3.1.0",
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "express-rate-limit": "^5.0.0",
     "matrix-bot-sdk": "^0.3.8",
     "node-cache": "^4.2.0"
